@@ -6,11 +6,9 @@ package com.lai.opengldemo;
  * @describe describe
  */
 public class NativeImpl {
-
     static {
         System.loadLibrary("native-lib");
     }
-
     public static native String stringFromJNI();
 
 

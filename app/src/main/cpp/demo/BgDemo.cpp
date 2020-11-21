@@ -2,53 +2,23 @@
 // Created by Lai on 2020/11/7.
 //
 
-#include "TriangleDemo.h"
 #include "../util/logUtil.h"
 #include "../util/GLUtil.h"
+#include "BgDemo.h"
 #include <GLES3/gl3.h>
 
 
-void TriangleDemo::draw(int screenW, int screenH) {
+void BgDemo::draw(int screenW, int screenH) {
     //LOGCATE("TriangleSample::Draw");
-
-    GLfloat triangleVertices[] = {
-            0.0f,  0.5f, 0.0f,
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-    };
-    GLfloat lineVertices[] = {
-            -1.0f,  0.0f, 0.0f,
-            1.0, -0, 0.0f,
-            0.0f,  1.0f, 0.0f,
-            0.0f,  -1.0f, 0.0f,
-    };
 
     if(m_ProgramObj == 0)
         return;
 
     glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(1.0, 1.0, 1.0, 1.0);
-
-    // Use the program object
-    glUseProgram (m_ProgramObj);
-
-    // Load the vertex data
-
-    glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, lineVertices );
-    glEnableVertexAttribArray (0);
-    glDrawArrays (GL_LINES  , 0, 4);
-
-
-    glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, triangleVertices );
-    glDrawArrays (GL_TRIANGLES  , 0, 3);
-
-
-    glUseProgram (GL_NONE);
+    glClearColor(1.0, 0.5, 1.0, 1.0);
 }
 
-void TriangleDemo::Init() {
-    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-
+void BgDemo::Init() {
     if (m_ProgramObj != 0) return;
 
     if(m_ProgramObj != 0)
@@ -71,13 +41,13 @@ void TriangleDemo::Init() {
             "   fragColor = vec4 ( 1.0, 0.0, 0.0, 1.0 );  \n"
             "}                                            \n";
 
-    LOGCATE("init TriangleDemo");
+    LOGCATE("init BgDemo");
 
     m_ProgramObj =  GLUtil::CreateProgram(vShaderStr, fShaderStr, m_VertexShader, m_FragmentShader);
 }
 
 
-void TriangleDemo::OnSurfaceChanged(int width, int height) {
+void BgDemo::OnSurfaceChanged(int width, int height) {
     LOGCATE("MyGLRenderContext::OnSurfaceChanged [w, h] = [%d, %d]", width, height);
     glViewport(0, 0, width, height);
 }

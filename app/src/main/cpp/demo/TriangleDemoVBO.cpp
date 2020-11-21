@@ -1,26 +1,27 @@
 //
-// Created by Lai on 2020/11/7.
+// Created by Lai on 2020/11/15.
 //
 
-#include "TriangleDemo.h"
+#include "TriangleDemoVBO.h"
+
 #include "../util/logUtil.h"
 #include "../util/GLUtil.h"
 #include <GLES3/gl3.h>
 
 
-void TriangleDemo::draw(int screenW, int screenH) {
+void TriangleDemoVBO::draw(int screenW, int screenH) {
     //LOGCATE("TriangleSample::Draw");
 
     GLfloat triangleVertices[] = {
-            0.0f,  0.5f, 0.0f,
+            0.0f, 0.5f, 0.0f,
             -0.5f, -0.5f, 0.0f,
             0.5f, -0.5f, 0.0f,
-    };
-    GLfloat lineVertices[] = {
-            -1.0f,  0.0f, 0.0f,
+    };;
+    GLfloat lineVertices[]= {
+            -1.0f, 0.0f, 0.0f,
             1.0, -0, 0.0f,
-            0.0f,  1.0f, 0.0f,
-            0.0f,  -1.0f, 0.0f,
+            0.0f, 1.0f, 0.0f,
+            0.0f, -1.0f, 0.0f,
     };
 
     if(m_ProgramObj == 0)
@@ -34,19 +35,30 @@ void TriangleDemo::draw(int screenW, int screenH) {
 
     // Load the vertex data
 
-    glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, lineVertices );
-    glEnableVertexAttribArray (0);
-    glDrawArrays (GL_LINES  , 0, 4);
+
+    //绑定对象 GL_ARRAY_BUFFER：可以用来保存glVertexAttribPointer()设置的顶点数组数据
+    glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+    //为当前VBO塞点数据 GL_STATIC_DRAW 表示数据不会或几乎不会改变。
+    glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), lineVertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glDrawArrays(GL_LINES, 0, 4);
 
 
-    glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, triangleVertices );
-    glDrawArrays (GL_TRIANGLES  , 0, 3);
+    //绑定对象 GL_ARRAY_BUFFER：可以用来保存glVertexAttribPointer()设置的顶点数组数据
+    glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
+    //为当前VBO塞点数据 GL_STATIC_DRAW 表示数据不会或几乎不会改变。
+    glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), triangleVertices, GL_STATIC_DRAW);
 
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    glEnableVertexAttribArray(0);
 
     glUseProgram (GL_NONE);
 }
 
-void TriangleDemo::Init() {
+void TriangleDemoVBO::Init() {
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
     if (m_ProgramObj != 0) return;
@@ -68,18 +80,20 @@ void TriangleDemo::Init() {
             "out vec4 fragColor;                          \n"
             "void main()                                  \n"
             "{                                            \n"
-            "   fragColor = vec4 ( 1.0, 0.0, 0.0, 1.0 );  \n"
+            "   fragColor = vec4 ( 0.0, 0.0, 0.0, 1);  \n"
             "}                                            \n";
 
-    LOGCATE("init TriangleDemo");
+    LOGCATE("init TriangleDemoVBO");
 
-    m_ProgramObj =  GLUtil::CreateProgram(vShaderStr, fShaderStr, m_VertexShader, m_FragmentShader);
+    m_ProgramObj = GLUtil::CreateProgram(vShaderStr, fShaderStr, m_VertexShader, m_FragmentShader);
+    //创建对象
+    glGenBuffers(1, &triangleVBO);
+    glGenBuffers(1, &lineVBO);
+
 }
 
 
-void TriangleDemo::OnSurfaceChanged(int width, int height) {
+void TriangleDemoVBO::OnSurfaceChanged(int width, int height) {
     LOGCATE("MyGLRenderContext::OnSurfaceChanged [w, h] = [%d, %d]", width, height);
     glViewport(0, 0, width, height);
 }
-
-
